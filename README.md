@@ -92,6 +92,8 @@ Run `knowledge_graph_construction.ipynb` top to bottom.
 
 ---
 ## How it beats RAG
+<img width="1389" height="989" alt="image" src="https://github.com/user-attachments/assets/106f1b9f-fcd0-4cf5-8642-ecef99fc78e0" />
+
 
 RAG retrieves chunks and hopes the answer lives in one chunk.
 Knowledge graphs don't retrieve, they traverse.
