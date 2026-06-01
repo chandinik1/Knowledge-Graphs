@@ -91,7 +91,65 @@ Define your model realted varibles
 Run `knowledge_graph_construction.ipynb` top to bottom.
 
 ---
+## How it beats RAG
 
+RAG retrieves chunks and hopes the answer lives in one chunk.
+Knowledge graphs don't retrieve, they traverse.
+
+### The retrieval problem
+
+```
+Chunk A:  "Armstrong commanded Apollo 11"
+Chunk B:  "Apollo 11 launched from Kennedy Space Center"
+
+RAG question: "Where did Armstrong's mission launch from?"
+→ If A and B never co-occur in one retrieved chunk, RAG cannot connect them.
+→ The graph traverses the edge chain directly.
+```
+We could do Hierarchical RAG, but if two chuck are in complete differnt documents this is the efficient approach.
+Every edge is an explicit reasoning step. Multi-hop questions that require
+connecting facts across documents are answered by following edges, not by
+hoping two facts happened to land in the same retrieval window.
+
+### Grounded vs ungrounded
+
+`ask()` is called twice on the same question:
+
+```
+WITHOUT context  →  model answers from pretraining
+WITH context     →  model must cite specific edges from your graph
+```
+
+For public knowledge like Apollo, the ungrounded answer is often richer 
+the model already knows the facts. For private data like  fault tickets,
+ diagnostic exports, Matrix signal flows the ungrounded answer is
+useless. The model has never seen your fleet data.
+
+```
+Public data   →  both paths work, ungrounded is faster
+Private data  →  only grounded path works, full stop
+```
+
+---
+
+## Evaluation
+
+A knowledge graph pipeline has two failure points that need to be measured
+separately: extraction quality and resolution quality.
+
+### Metrics
+
+```
+Precision  =  correct extractions / total extractions
+Recall     =  correct extractions / total gold entities
+F1         =  2 * P * R / (P + R)
+```
+
+**High precision, low recall** LLM too conservative. Relax the
+"central entities only" instruction in the extraction prompt.
+
+**High recall, low precision** LLM over-extracting. Tighten the
+selectivity instruction.
 
 ## References
 
